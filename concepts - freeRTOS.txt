@@ -1,0 +1,68 @@
+RTOS INTRODUCTION
+Real Time Application:
+- Real Time computing is about predictable computing. It is not about performance, it is about timeliness. Real time deals with
+guarentees not the raw speed. Having more processor/RAM/faster bus interface does not make the system real time. So, a real time
+system is one in which the correctness of the computations not only depends upon the logical correctness of the computation, but
+also upon the time at which the result is produced. If the timing constraints are not met, system failure is said to have
+occurred.  
+- Hard real time Application : Missing the timeline is fatal. System crashes(air bag,missile guidance systems etc.)
+- Soft real time Application : Delay is tolerable.(VoIP,Stock market website)
+
+Real Time Operating System:
+- To run such a real time application you need a real time operating system as normal OS wont accomodate the timing constraints of
+the application.
+- OS must have known maximum time for each of the critical operations it performs. Ex. interrupt entry and exit,scheduling
+algo,handling of critical sections etc.
+- General purpose OS is optimised for high throughput(corelated to user convenience) ie number of tasks per unit time. Execution
+of a high priority task may get delayed in order to serve 5-6 low priority tasks. The scheduler uses a fairness policy to dispatch the threads.
+- In RTOS, threads are executed in order of priority. A high priority thread executes when it is ready to run, pusing all the
+other low priority threads.
+- This kind of implies that RTOS has less throughput than GPOS, which is true but practically applications on RTOS are generally
+lightweight compared to the processes of the GPOS. So in a way throughput is relative to the load of the system.
+- The task latency ie the time difference bw stimuli and task running to handle that stimuli is made to run on the CPU, is bounded
+and deterministic.
+- The interrupt latency ie the time difference bw the interrupt and the execution of ISR, is bounded and deterministic in RTOS.
+- After the ISR execution, the interrupted task runs or if a higher priority task is ready, then it is scheduled. This time
+difference is called scheduling latency, which again is bounded and deterministic.
+- Because of presence of shared resources, sometimes a high priority task is blocked because a low priority task is accessing the
+resource. This is called priority inversion and must be solved in a real time scenario. These effects are insignificant for GPOS.
+- Multitasking needed when multiple tasks have to run on a single core ie concurrent execution. If multicore, then parallel
+execution.
+
+FREERTOS TASK CREATION
+- Task is a piece of schedulable code.
+- Implementing a Task
+    void vATaskFunction( void *pvParameters )
+    {
+        for( ;; )
+        {
+            -- Task application code here. --
+        }
+
+        /* Tasks must not attempt to return from their implementing
+        function or otherwise exit.  In newer FreeRTOS port
+        attempting to do so will result in an configASSERT() being
+        called if it is defined.  If it is necessary for a task to
+        exit then have the task call vTaskDelete( NULL ) to ensure
+        its exit is clean. */
+        vTaskDelete( NULL );
+    }
+
+- Task Creation API
+BaseType_t xTaskCreate(    TaskFunction_t pvTaskCode,
+                            const char * const pcName,
+                            configSTACK_DEPTH_TYPE usStackDepth,
+                            void *pvParameters,
+                            UBaseType_t uxPriority,
+                            TaskHandle_t *pxCreatedTask
+                          );
+
+- This API creates a TCB for the task associates stack memory in the memory.
+    - pvTaskCode : name of the task function.
+    - pcName : Descriptive name of the task.
+    - usStackDepth : Stack size (task will use this for local variables and saving its own context during context switch).
+    - pvParameters : pointer to send data into task.
+    - uxPriority : priority of the task.
+    - pxCreatedTask : pointer to the TCB in the memory.
+
+  

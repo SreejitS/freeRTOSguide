@@ -58,11 +58,28 @@ BaseType_t xTaskCreate(    TaskFunction_t pvTaskCode,
                           );
 
 - This API creates a TCB for the task associates stack memory in the memory.
-    - pvTaskCode : name of the task function.
-    - pcName : Descriptive name of the task.
-    - usStackDepth : Stack size (task will use this for local variables and saving its own context during context switch).
-    - pvParameters : pointer to send data into task.
-    - uxPriority : priority of the task.
-    - pxCreatedTask : pointer to the TCB in the memory.
+    - pvTaskCode : name of the task function. mandatory.
+    - pcName : Descriptive name of the task. optional, can be NULL.
+    - usStackDepth : Stack size (task will use this for local variables and saving its own context during context switch). mandatory
+    - pvParameters : pointer to send data into task.optional, can be NULL.
+    - uxPriority : priority of the task. mandatory.
+    - pxCreatedTask : pointer to the TCB in the memory. optional, can be NULL.
+
+- Task scheduling will give same importance to task if their priority is same.
+- Memory use in FreeRTOS. tasks,semaphores,queues are stored in heap. <- Dynamically Created Kernel Objects.
+
+  |-----------------------------------RAM-------------------------------|  
+  |---------HEAP configTOTAL_HEAP_SIZE --------------|   
+  -----------------------------------------------------------------------
+  | TCB1 |  Stack 1 |    			                         | global variables |
+  |		 |	        |				                         | array            |
+  |		 |	        |				                         | static variables |
+  |		 |	        |				                         |		            |
+  -----------------------------------------------------------------------
+  (BEGIN of SRAM)       												  (END of SRAM)
+
+  xTaskCreate
+    TCB
+   Stack
 
   
